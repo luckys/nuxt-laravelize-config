@@ -1,42 +1,42 @@
 # @luckys_luis/nuxt-laravelize-config
 
-English | [Español](./README.es.md)
+[English](./README.md) | Español
 
-Shared tooling presets for the `nuxt-laravelize` ecosystem.
+Presets compartidos de tooling para el ecosistema `nuxt-laravelize`.
 
-This package centralizes linting, testing, formatting, and hook conventions so multiple repositories can follow the same baseline without duplicating configuration files.
+Este paquete centraliza reglas de linting, testing, formateo y hooks para que varios repositorios mantengan la misma base sin duplicar archivos de configuración.
 
-## Table of contents
+## Tabla de contenido
 
-- [What this package provides](#what-this-package-provides)
-- [Installation](#installation)
-- [Public API](#public-api)
-- [Usage examples](#usage-examples)
-- [Behavior details](#behavior-details)
-- [Development](#development)
-- [Release process](#release-process)
+- [Qué ofrece este paquete](#qué-ofrece-este-paquete)
+- [Instalación](#instalación)
+- [API pública](#api-pública)
+- [Ejemplos de uso](#ejemplos-de-uso)
+- [Detalles de comportamiento](#detalles-de-comportamiento)
+- [Desarrollo](#desarrollo)
+- [Proceso de publicación](#proceso-de-publicación)
 
-## What this package provides
+## Qué ofrece este paquete
 
-- A reusable ESLint flat config factory with `recommended` and `strict` presets.
-- A base Vitest config for Node-based module and tooling repositories.
-- Path exports for base files:
+- Una fábrica reutilizable de configuración ESLint flat con presets `recommended` y `strict`.
+- Una configuración base de Vitest para repositorios de módulos y tooling sobre Node.
+- Exports de rutas para archivos base:
   - TypeScript (`tsconfig.base.json`)
   - Oxlint (`oxlintrc.base.json`)
   - dprint (`dprint.base.json`)
   - Lefthook (`lefthook.base.yml`)
 
-## Installation
+## Instalación
 
-Install as a development dependency:
+Instálalo como dependencia de desarrollo:
 
 ```bash
 pnpm add -D @luckys_luis/nuxt-laravelize-config
 ```
 
-## Public API
+## API pública
 
-Main package export (`@luckys_luis/nuxt-laravelize-config`):
+Export principal (`@luckys_luis/nuxt-laravelize-config`):
 
 - `defineNuxtLaravelizeEslintConfig(options?)`
 - `eslintBaseConfig`
@@ -55,7 +55,7 @@ Subpath exports:
 - `@luckys_luis/nuxt-laravelize-config/dprint`
 - `@luckys_luis/nuxt-laravelize-config/lefthook`
 
-## Usage examples
+## Ejemplos de uso
 
 ### ESLint (recommended)
 
@@ -115,7 +115,7 @@ import { lefthookBaseConfigPath } from '@luckys_luis/nuxt-laravelize-config/left
 console.log(lefthookBaseConfigPath)
 ```
 
-### TypeScript base path
+### Ruta base de TypeScript
 
 ```js
 import { tsconfigBasePath } from '@luckys_luis/nuxt-laravelize-config/tsconfig'
@@ -123,35 +123,35 @@ import { tsconfigBasePath } from '@luckys_luis/nuxt-laravelize-config/tsconfig'
 console.log(tsconfigBasePath)
 ```
 
-## Behavior details
+## Detalles de comportamiento
 
-### ESLint presets
+### Presets de ESLint
 
-`recommended` includes:
+`recommended` incluye:
 
 - `no-unused-vars: error`
 - `no-undef: error`
 - `no-console: error`
 
-`strict` extends `recommended` and adds:
+`strict` extiende `recommended` y agrega:
 
 - `no-else-return: error`
 - `max-depth: ['error', 1]`
 
-### Vitest defaults
+### Valores por defecto de Vitest
 
 - `globals: true`
 - `environment: 'node'`
 - `include: ['test/**/*.test.ts']`
 
-### Base file conventions
+### Convenciones de archivos base
 
-- `tsconfig.base.json`: strict TS defaults suitable for tooling and libraries.
-- `oxlintrc.base.json`: correctness and suspicious checks with style restrictions.
-- `dprint.base.json`: shared formatting settings (`lineWidth: 100`, single quotes, no semicolons).
-- `lefthook.base.yml`: pre-commit commands for `pnpm lint` and `pnpm test`.
+- `tsconfig.base.json`: configuración estricta de TypeScript para librerías y tooling.
+- `oxlintrc.base.json`: reglas de corrección y sospechosas con restricciones de estilo.
+- `dprint.base.json`: configuración compartida de formateo (`lineWidth: 100`, comillas simples, sin punto y coma).
+- `lefthook.base.yml`: comandos de pre-commit para `pnpm lint` y `pnpm test`.
 
-## Development
+## Desarrollo
 
 ```bash
 pnpm install
@@ -161,14 +161,14 @@ pnpm test
 pnpm typecheck
 ```
 
-Build output is generated in `dist/` and published as ESM + types.
+El build genera salida en `dist/` y publica ESM + tipos.
 
-## Release process
+## Proceso de publicación
 
-1. Update version in `package.json`.
-2. Run quality checks.
-3. Build the package.
-4. Publish to npm.
+1. Actualiza la versión en `package.json`.
+2. Ejecuta validaciones de calidad.
+3. Construye el paquete.
+4. Publica en npm.
 
 ```bash
 pnpm lint && pnpm test && pnpm typecheck
