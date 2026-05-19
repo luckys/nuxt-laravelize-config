@@ -1,6 +1,6 @@
 {
   "name": "@luckys_luis/nuxt-laravelize-config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Shared configuration presets for nuxt-laravelize repositories",
   "license": "MIT",
   "type": "module",
