@@ -1,0 +1,56 @@
+{
+  "name": "@nuxt-laravelize/config",
+  "version": "0.0.1",
+  "description": "Shared configuration presets for nuxt-laravelize repositories",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./eslint": {
+      "types": "./dist/eslint.d.ts",
+      "import": "./dist/eslint.js"
+    },
+    "./vitest": {
+      "types": "./dist/vitest.d.ts",
+      "import": "./dist/vitest.js"
+    },
+    "./tsconfig": {
+      "types": "./dist/tsconfig.d.ts",
+      "import": "./dist/tsconfig.js"
+    },
+    "./oxlint": {
+      "types": "./dist/oxlint.d.ts",
+      "import": "./dist/oxlint.js"
+    },
+    "./dprint": {
+      "types": "./dist/dprint.d.ts",
+      "import": "./dist/dprint.js"
+    },
+    "./lefthook": {
+      "types": "./dist/lefthook.d.ts",
+      "import": "./dist/lefthook.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/eslint.ts src/vitest.ts src/tsconfig.ts src/oxlint.ts src/dprint.ts src/lefthook.ts --dts --format esm --clean",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.0",
+    "eslint": "^9.39.1",
+    "oxlint": "^1.29.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
+}

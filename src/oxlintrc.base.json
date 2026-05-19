@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "correctness": "error",
+    "suspicious": "error",
+    "style": {
+      "no-console": "error"
+    },
+    "pedantic": {
+      "no-else-return": "error"
+    }
+  }
+}
