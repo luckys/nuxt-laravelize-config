@@ -1,5 +1,5 @@
 {
-  "name": "@nuxt-laravelize/config",
+  "name": "@luckys_luis/nuxt-laravelize-config",
   "version": "0.0.1",
   "description": "Shared configuration presets for nuxt-laravelize repositories",
   "license": "MIT",

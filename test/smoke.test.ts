@@ -9,7 +9,7 @@ import {
   vitestBaseConfig,
 } from '../src'
 
-describe('@nuxt-laravelize/config', () => {
+describe('@luckys_luis/nuxt-laravelize-config', () => {
   it('exports non-empty defaults', () => {
     expect(eslintBaseConfig.length).toBeGreaterThan(0)
     expect(vitestBaseConfig.test?.environment).toBe('node')
