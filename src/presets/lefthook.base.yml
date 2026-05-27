@@ -1,6 +1,0 @@
-pre-commit:
-  commands:
-    lint:
-      run: pnpm lint
-    test:
-      run: pnpm test

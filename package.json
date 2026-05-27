@@ -1,16 +1,14 @@
 {
   "name": "@luckys_luis/nuxt-laravelize-config",
-  "version": "0.1.0",
-  "description": "Shared configuration presets for nuxt-laravelize repositories",
+  "version": "0.1.1",
+  "description": "[DEPRECATED] Renamed to @luckys_luis/nuxt-ddd-toolkit. This stub re-exports from there.",
+  "deprecated": "Renamed to @luckys_luis/nuxt-ddd-toolkit. Run: pnpm add -D @luckys_luis/nuxt-ddd-toolkit",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "files": [
     "dist"
   ],
-  "bin": {
-    "laravelize": "./dist/cli/bin.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -51,24 +49,15 @@
   },
   "scripts": {
     "build": "tsup",
-    "lint": "eslint .",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "node ./dist/postinstall/index.js"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "citty": "^0.1.6"
+    "@luckys_luis/nuxt-ddd-toolkit": "^0.2.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.0",
-    "@typescript-eslint/parser": "^8.59.4",
-    "@typescript-eslint/rule-tester": "^8.59.4",
-    "@typescript-eslint/utils": "^8.59.4",
-    "eslint": "^9.39.1",
-    "oxlint": "^1.29.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.8"
+    "typescript": "^5.9.3"
   }
 }
