@@ -2,176 +2,134 @@
 
 English | [Español](./README.es.md)
 
-Shared tooling presets for the `nuxt-laravelize` ecosystem.
+Shared tooling for the `nuxt-laravelize` ecosystem: linting/formatting presets, an **ESLint plugin with DDD rules**, a **scaffolding CLI**, and an **AI skills catalogue** auto-installed into `.claude/skills/` and `.cursor/rules/`.
 
-This package centralizes linting, testing, formatting, and hook conventions so multiple repositories can follow the same baseline without duplicating configuration files.
+## The Laravelize stack
 
-## Table of contents
+| Package | Role |
+|---|---|
+| **[`@luckys_luis/nuxt-laravelize-config`](./)** *(this one)* | Toolchain — 12-rule DDD ESLint plugin, scaffolding CLI (`new:*`), shared presets, 15 AI skills with auto-link. |
+| [`@luckys_luis/nuxt-laravelize`](../nuxt-laravelize) | Runtime — DI container, controllers, queues, mail, notifications, i18n, policies, seeders, factories, testing helpers. |
+| [`@luckys_luis/nuxt-ddd-toolkit`](../nuxt-ddd-toolkit) | Bootstrap layer — capability detection, 1 ESLint rule, 4 skills, minimal preflight CLI. |
+
+## Contents
 
 - [What this package provides](#what-this-package-provides)
 - [Installation](#installation)
-- [Public API](#public-api)
-- [Usage examples](#usage-examples)
-- [Behavior details](#behavior-details)
+- [`laravelize` CLI](#laravelize-cli)
+- [AI agent skills](#ai-agent-skills)
+- [DDD ESLint plugin](#ddd-eslint-plugin)
+- [Shared presets](#shared-presets)
 - [Development](#development)
-- [Release process](#release-process)
 
 ## What this package provides
 
-- A reusable ESLint flat config factory with `recommended` and `strict` presets.
-- A base Vitest config for Node-based module and tooling repositories.
-- Path exports for base files:
-  - TypeScript (`tsconfig.base.json`)
-  - Oxlint (`oxlintrc.base.json`)
-  - dprint (`dprint.base.json`)
-  - Lefthook (`lefthook.base.yml`)
+1. **Presets**: ESLint flat (`recommended` / `strict`), Vitest, `tsconfig.base.json`, `oxlintrc.base.json`, `dprint.base.json`, `lefthook.base.yml`.
+2. **DDD ESLint plugin** (`./eslint-plugin`): 12 semantic rules guarding DDD invariants (no infra→domain imports, use-case naming, etc.).
+3. **`laravelize` CLI** with two command families:
+   - `new:*` — scaffolds contexts, aggregates, value objects, repositories, use cases, controllers, resources, listeners, policies, seeders and factories.
+   - `skills install|unlink|status` — manages the symlinks to `.claude/skills/` and `.cursor/rules/`.
+4. **15 AI skills** bundled in the package; a postinstall hook links them automatically when it detects `.claude/skills/` or `.cursor/rules/` in the consumer repo.
 
 ## Installation
-
-Install as a development dependency:
 
 ```bash
 pnpm add -D @luckys_luis/nuxt-laravelize-config
 ```
 
-## Public API
+> The `postinstall` hook links skills automatically when `.claude/skills/` or `.cursor/rules/` exist. To skip: `LARAVELIZE_SKIP_POSTINSTALL=1 pnpm install`.
 
-Main package export (`@luckys_luis/nuxt-laravelize-config`):
+## `laravelize` CLI
 
-- `defineNuxtLaravelizeEslintConfig(options?)`
-- `eslintBaseConfig`
-- `vitestBaseConfig`
-- `tsconfigBasePath`
-- `oxlintBaseConfigPath`
-- `dprintBaseConfigPath`
-- `lefthookBaseConfigPath`
+```bash
+# bounded context + module
+pnpm laravelize new:context billing
+pnpm laravelize new:aggregate Invoice --context=billing --module=invoicing
+pnpm laravelize new:value-object InvoiceAmount --context=billing --module=invoicing --type=int
+pnpm laravelize new:repository Invoice --context=billing --module=invoicing --impl=drizzle
+pnpm laravelize new:use-case InvoiceCreator --context=billing --module=invoicing --aggregate=Invoice --type=command
 
-Subpath exports:
+# HTTP / wiring
+pnpm laravelize new:controller CreateInvoice
+pnpm laravelize new:resource Invoice --context=billing --module=invoicing --aggregate=Invoice
 
-- `@luckys_luis/nuxt-laravelize-config/eslint`
-- `@luckys_luis/nuxt-laravelize-config/vitest`
-- `@luckys_luis/nuxt-laravelize-config/tsconfig`
-- `@luckys_luis/nuxt-laravelize-config/oxlint`
-- `@luckys_luis/nuxt-laravelize-config/dprint`
-- `@luckys_luis/nuxt-laravelize-config/lefthook`
+# Events + side effects
+pnpm laravelize new:listener NotifyAdminOfNewInvoice --context=billing --module=invoicing --event=InvoiceCreated --queued
+pnpm laravelize new:policy Invoice
+pnpm laravelize new:seeder DemoInvoice
+pnpm laravelize new:factory Invoice --context=billing --module=invoicing
 
-## Usage examples
-
-### ESLint (recommended)
-
-```js
-import { defineNuxtLaravelizeEslintConfig } from '@luckys_luis/nuxt-laravelize-config/eslint'
-
-export default defineNuxtLaravelizeEslintConfig()
+# skills
+pnpm laravelize skills status
+pnpm laravelize skills install --target=claude
+pnpm laravelize skills unlink
 ```
 
-### ESLint (strict)
+Each template emits code that satisfies CodelyTV conventions (`{Aggregate}{Action}er.execute()`, `{Verb}{Noun}Controller.invoke()`, value objects with `#value` + `#ensure*`, repositories with `save/find/search/searchPaginated/count`).
+
+## AI agent skills
+
+Catalogue (15 files in Anthropic `SKILL.md` format):
+
+`nuxt-laravelize-ddd-overview`, `create-bounded-context`, `create-aggregate`, `create-value-object`, `create-repository`, `create-use-case`, `create-controller-with-form-request`, `create-resource`, `create-listener-and-event`, `create-mail`, `create-notification`, `create-policy`, `create-seeder`, `create-factory`, `write-use-case-test-with-object-mother`.
+
+The postinstall hook writes `.laravelize-manifest.json` next to each link; `laravelize skills unlink` removes them cleanly. For Cursor the content is rewritten to `.mdc` with globs `server/contexts/**`, `app/contexts/**`, `tests/**`.
+
+## DDD ESLint plugin
 
 ```js
-import { defineNuxtLaravelizeEslintConfig } from '@luckys_luis/nuxt-laravelize-config/eslint'
+// eslint.config.mjs
+import dddPlugin from '@luckys_luis/nuxt-laravelize-config/eslint-plugin'
 
+export default [
+  dddPlugin.configs.recommended, // or configs.strict
+]
+```
+
+**Rules** (`recommended` enables the first 8; `strict` adds the last four):
+
+- `ddd/no-infrastructure-from-domain`
+- `ddd/no-application-from-domain`
+- `ddd/domain-flat`
+- `ddd/use-case-naming` — `{Aggregate}{Action}er` (accepts `-er` and `-or`)
+- `ddd/use-case-method-execute`
+- `ddd/controller-single-action` — single public `invoke()`
+- `ddd/repository-no-throw`
+- `ddd/repository-required-methods` — `save/find/search/searchPaginated/count`
+- `ddd/controller-naming` — known verbs (Find, Create, Update, …)
+- `ddd/aggregate-max-props` — max 4 props when the class declares `toPrimitives`
+- `ddd/value-object-private-value`
+- `ddd/value-object-no-throw-in-constructor`
+
+## Shared presets
+
+Subpaths: `./eslint`, `./vitest`, `./tsconfig`, `./oxlint`, `./dprint`, `./lefthook`. Examples:
+
+```js
+// eslint.config.mjs (without the DDD plugin)
+import { defineNuxtLaravelizeEslintConfig } from '@luckys_luis/nuxt-laravelize-config/eslint'
 export default defineNuxtLaravelizeEslintConfig({ preset: 'strict' })
 ```
 
-### Vitest
-
 ```ts
-import { defineConfig, mergeConfig } from 'vitest/config'
+// vitest.config.ts
+import { mergeConfig, defineConfig } from 'vitest/config'
 import { vitestBaseConfig } from '@luckys_luis/nuxt-laravelize-config/vitest'
-
-export default mergeConfig(
-  vitestBaseConfig,
-  defineConfig({
-    test: {
-      coverage: {
-        reporter: ['text', 'html'],
-      },
-    },
-  }),
-)
+export default mergeConfig(vitestBaseConfig, defineConfig({ test: { coverage: { reporter: ['html'] } } }))
 ```
-
-### Oxlint
-
-```js
-import { oxlintBaseConfigPath } from '@luckys_luis/nuxt-laravelize-config/oxlint'
-
-console.log(oxlintBaseConfigPath)
-```
-
-### dprint
-
-```js
-import { dprintBaseConfigPath } from '@luckys_luis/nuxt-laravelize-config/dprint'
-
-console.log(dprintBaseConfigPath)
-```
-
-### Lefthook
-
-```js
-import { lefthookBaseConfigPath } from '@luckys_luis/nuxt-laravelize-config/lefthook'
-
-console.log(lefthookBaseConfigPath)
-```
-
-### TypeScript base path
-
-```js
-import { tsconfigBasePath } from '@luckys_luis/nuxt-laravelize-config/tsconfig'
-
-console.log(tsconfigBasePath)
-```
-
-## Behavior details
-
-### ESLint presets
-
-`recommended` includes:
-
-- `no-unused-vars: error`
-- `no-undef: error`
-- `no-console: error`
-
-`strict` extends `recommended` and adds:
-
-- `no-else-return: error`
-- `max-depth: ['error', 1]`
-
-### Vitest defaults
-
-- `globals: true`
-- `environment: 'node'`
-- `include: ['test/**/*.test.ts']`
-
-### Base file conventions
-
-- `tsconfig.base.json`: strict TS defaults suitable for tooling and libraries.
-- `oxlintrc.base.json`: correctness and suspicious checks with style restrictions.
-- `dprint.base.json`: shared formatting settings (`lineWidth: 100`, single quotes, no semicolons).
-- `lefthook.base.yml`: pre-commit commands for `pnpm lint` and `pnpm test`.
 
 ## Development
 
 ```bash
 pnpm install
-pnpm build
-pnpm lint
-pnpm test
-pnpm typecheck
+pnpm build      # tsup → dist/, copies skills + assets, chmod +x cli/bin.js
+pnpm test       # vitest (presets, postinstall, eslint-plugin rule-tester, CLI scaffolding)
+pnpm typecheck  # tsc --noEmit
 ```
 
-Build output is generated in `dist/` and published as ESM + types.
-
-## Release process
-
-1. Update version in `package.json`.
-2. Run quality checks.
-3. Build the package.
-4. Publish to npm.
+## Release
 
 ```bash
-pnpm lint && pnpm test && pnpm typecheck
-pnpm build
+pnpm lint && pnpm test && pnpm typecheck && pnpm build
 npm publish --access public
 ```
