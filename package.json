@@ -8,6 +8,9 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "laravelize": "./dist/cli/bin.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -36,17 +39,32 @@
     "./lefthook": {
       "types": "./dist/lefthook.d.ts",
       "import": "./dist/lefthook.js"
+    },
+    "./postinstall": {
+      "types": "./dist/postinstall/index.d.ts",
+      "import": "./dist/postinstall/index.js"
+    },
+    "./eslint-plugin": {
+      "types": "./dist/eslint-plugin/index.d.ts",
+      "import": "./dist/eslint-plugin/index.js"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts src/eslint.ts src/vitest.ts src/tsconfig.ts src/oxlint.ts src/dprint.ts src/lefthook.ts --dts --format esm --clean",
+    "build": "tsup",
     "lint": "eslint .",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node ./dist/postinstall/index.js"
+  },
+  "dependencies": {
+    "citty": "^0.1.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.0",
+    "@typescript-eslint/parser": "^8.59.4",
+    "@typescript-eslint/rule-tester": "^8.59.4",
+    "@typescript-eslint/utils": "^8.59.4",
     "eslint": "^9.39.1",
     "oxlint": "^1.29.0",
     "tsup": "^8.5.0",
